@@ -2,7 +2,11 @@ package app.sagen.killtitle;
 
 import app.sagen.killtitle.config.Configuration;
 import app.sagen.killtitle.config.ConfigurationManager;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,13 +62,31 @@ public class KillTitle extends JavaPlugin implements Listener {
 
         Configuration config = configurationManager.getConfiguration("config");
 
-        player.sendTitle(
-                ChatColor.translateAlternateColorCodes('&', config.getString("messages.title"))
-                        .replace("%player", player.getName()),
-                ChatColor.translateAlternateColorCodes('&', config.getString("messages.subtitle"))
-                        .replace("%player", player.getName()),
+        String titleMessage = ChatColor.translateAlternateColorCodes('&', config.getString("messages.title"))
+                .replace("%player", player.getName());
+        String subtitleMessage = ChatColor.translateAlternateColorCodes('&', config.getString("messages.subtitle"))
+                .replace("%player", player.getName());
+
+        sendTitle(
+                player.getKiller(),
+                titleMessage, subtitleMessage,
                 config.getInt("title.fadeIn"),
                 config.getInt("title.stay"),
                 config.getInt("title.fadeOut"));
+    }
+
+    public void sendTitle(Player player, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+
+        PlayerConnection connection = ((CraftPlayer)player).getHandle().playerConnection;
+
+        IChatBaseComponent jsonTitle = IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + title + "\"}");
+        IChatBaseComponent jsonSubtitle = IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + subtitle + "\"}");
+
+        PacketPlayOutTitle sendTitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, jsonTitle, fadeIn, stay, fadeOut);
+        PacketPlayOutTitle sendSubtitle = new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, jsonSubtitle);
+
+        connection.sendPacket(sendSubtitle);
+        connection.sendPacket(sendTitle);
+
     }
 }
