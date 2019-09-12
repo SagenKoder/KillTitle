@@ -1,0 +1,4 @@
+name: KillTitle
+version: '0.1-SNAPSHOT'
+main: app.sagen.killtitle.KillTitle
+author: Sagen
