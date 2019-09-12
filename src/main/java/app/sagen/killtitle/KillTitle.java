@@ -59,8 +59,10 @@ public class KillTitle extends JavaPlugin implements Listener {
         Configuration config = configurationManager.getConfiguration("config");
 
         player.sendTitle(
-                ChatColor.translateAlternateColorCodes('&', config.getString("messages.title")),
-                ChatColor.translateAlternateColorCodes('&', config.getString("messages.subtitle")),
+                ChatColor.translateAlternateColorCodes('&', config.getString("messages.title"))
+                        .replace("%player", player.getName()),
+                ChatColor.translateAlternateColorCodes('&', config.getString("messages.subtitle"))
+                        .replace("%player", player.getName()),
                 config.getInt("title.fadeIn"),
                 config.getInt("title.stay"),
                 config.getInt("title.fadeOut"));
