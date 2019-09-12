@@ -1,4 +1,4 @@
-name: KillTitle
-version: '1.1-SNAPSHOT'
+name: '${project.artifactId}'
+version: '${project.version}'
 main: app.sagen.killtitle.KillTitle
 author: Sagen
